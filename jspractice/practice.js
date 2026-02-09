@@ -1,10 +1,1 @@
-let arr={ food: [10, 20, 30], travel: [5, 15], bills: [40, 60] }
-let totalExpenses = 0;
-
-for (let category in arr) {
-  for (let i = 0; i < arr[category].length; i++) {
-    totalExpenses += arr[category][i];
-  }
-}
-console.log("Total Expenses: " + totalExpenses);
-// Output: Total Expenses: 180
+Promise (function (resolve, reject) {   new Promise(function (resolve, reject) {     setTimeout(function () {       resolve('foo');     }, 300);   }); }).then(function (value) {   console.log(value); });          
