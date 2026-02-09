@@ -14,6 +14,47 @@
     </div>
 
     <div class="app">
+      <nav class="topbar">
+        <div class="brand">
+          <span class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img">
+              <defs>
+                <linearGradient id="prismGradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#ff6b6b" />
+                  <stop offset="50%" stop-color="#ffd166" />
+                  <stop offset="100%" stop-color="#3a86ff" />
+                </linearGradient>
+              </defs>
+              <polygon points="32 6 58 54 6 54" fill="url(#prismGradient)" />
+              <polyline
+                points="32 6 32 54"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.8)"
+                stroke-width="2"
+              />
+              <polyline
+                points="6 54 58 54"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.55)"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+          <div class="brand-text">
+            <span class="brand-name">PrismCalc</span>
+            <span class="brand-tag">Precision Workspace</span>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button type="button" class="chip ghost" data-action="toggle-help">
+            Shortcuts
+          </button>
+          <button type="button" class="chip action" data-action="shuffle-theme">
+            Theme
+          </button>
+        </div>
+      </nav>
+
       <header class="hero">
         <div class="hero-text">
           <p class="eyebrow">PrismCalc</p>
@@ -22,6 +63,29 @@
             Build expressions fast, store variables, and explore functions with
             a library that keeps up.
           </p>
+          <div class="sequence">
+            <div class="sequence-step">
+              <span class="sequence-index">1</span>
+              <div>
+                <div class="sequence-title">Compose</div>
+                <div class="sequence-desc">Draft your expression.</div>
+              </div>
+            </div>
+            <div class="sequence-step">
+              <span class="sequence-index">2</span>
+              <div>
+                <div class="sequence-title">Evaluate</div>
+                <div class="sequence-desc">Refine with precision.</div>
+              </div>
+            </div>
+            <div class="sequence-step">
+              <span class="sequence-index">3</span>
+              <div>
+                <div class="sequence-title">Explore</div>
+                <div class="sequence-desc">Plot and compare.</div>
+              </div>
+            </div>
+          </div>
           <div class="meta-row">
             <span class="meta-pill">Live <strong id="liveBadge">Off</strong></span>
             <span class="meta-pill"
@@ -58,6 +122,31 @@
       <main class="workspace">
         <div class="main-stack">
           <section class="panel calc-panel">
+            <div class="panel-title-row">
+              <div class="panel-title">
+                <span class="panel-icon panel-icon--calc" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <rect x="4" y="2.5" width="16" height="19" rx="3" />
+                    <line x1="7" y1="7" x2="17" y2="7" />
+                    <line x1="7" y1="11" x2="11" y2="11" />
+                    <line x1="13" y1="11" x2="17" y2="11" />
+                    <line x1="7" y1="15" x2="11" y2="15" />
+                    <line x1="13" y1="15" x2="17" y2="15" />
+                    <line x1="7" y1="19" x2="11" y2="19" />
+                    <line x1="13" y1="19" x2="17" y2="19" />
+                  </svg>
+                </span>
+                <div>
+                  <h2>Expression Studio</h2>
+                  <p class="panel-subtitle">Compose, evaluate, and refine.</p>
+                </div>
+              </div>
+              <div class="panel-title-actions">
+                <span class="status-pill">Autosave on</span>
+                <span class="status-pill status-pill--accent">Precision ready</span>
+              </div>
+            </div>
+
             <div class="display">
               <div class="label-row">
                 <label for="expression">Expression</label>
@@ -180,7 +269,6 @@
                 </button>
               </div>
             </div>
-
             <div class="palette">
               <div class="palette-group" data-tone="a">
                 <div class="palette-label">Trig</div>
@@ -459,9 +547,17 @@
 
           <section class="panel graph-panel">
             <div class="panel-header">
-              <div>
-                <h2>Graph Lab</h2>
-                <p class="panel-subtitle">Plot f(x) with flexible ranges.</p>
+              <div class="panel-title">
+                <span class="panel-icon panel-icon--graph" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <path d="M4 4v16h16" />
+                    <path d="M7 14l4-4 3 3 5-6" />
+                  </svg>
+                </span>
+                <div>
+                  <h2>Graph Lab</h2>
+                  <p class="panel-subtitle">Plot f(x) with flexible ranges.</p>
+                </div>
               </div>
               <div class="graph-actions">
                 <button type="button" class="chip action" data-action="plot-graph">
@@ -537,11 +633,21 @@
             </div>
           </section>
         </div>
-
         <section class="panel side-panel">
           <div class="panel-block library-block">
             <div class="panel-header">
-              <h2>Function Library</h2>
+              <div class="panel-title">
+                <span class="panel-icon panel-icon--library" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3V4z" />
+                    <path d="M8 4v19" />
+                  </svg>
+                </span>
+                <div>
+                  <h2>Function Library</h2>
+                  <p class="panel-subtitle">Search and insert instantly.</p>
+                </div>
+              </div>
               <span class="panel-count" id="libraryCount">0</span>
             </div>
             <input
@@ -555,7 +661,18 @@
 
           <div class="panel-block snippet-block">
             <div class="panel-header">
-              <h2>Quick Snippets</h2>
+              <div class="panel-title">
+                <span class="panel-icon panel-icon--snippets" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <path d="M4 8h10l3 4-3 4H4l3-4-3-4z" />
+                    <path d="M18 6l2 2-2 2" />
+                  </svg>
+                </span>
+                <div>
+                  <h2>Quick Snippets</h2>
+                  <p class="panel-subtitle">Save reusable formulas.</p>
+                </div>
+              </div>
               <button type="button" class="ghost-text" data-action="clear-snippets">
                 Clear
               </button>
@@ -587,7 +704,18 @@
 
           <div class="panel-block">
             <div class="panel-header">
-              <h2>History</h2>
+              <div class="panel-title">
+                <span class="panel-icon panel-icon--history" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <circle cx="12" cy="12" r="8" />
+                    <path d="M12 8v5l3 2" />
+                  </svg>
+                </span>
+                <div>
+                  <h2>History</h2>
+                  <p class="panel-subtitle">Replay recent results.</p>
+                </div>
+              </div>
               <button type="button" class="ghost-text" data-action="clear-history">
                 Clear
               </button>
@@ -603,7 +731,20 @@
 
           <div class="panel-block">
             <div class="panel-header">
-              <h2>Variables</h2>
+              <div class="panel-title">
+                <span class="panel-icon panel-icon--vars" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <path d="M6 7h12" />
+                    <circle cx="9" cy="7" r="2" />
+                    <path d="M6 17h12" />
+                    <circle cx="15" cy="17" r="2" />
+                  </svg>
+                </span>
+                <div>
+                  <h2>Variables</h2>
+                  <p class="panel-subtitle">Track custom values.</p>
+                </div>
+              </div>
               <button type="button" class="ghost-text" data-action="clear-vars">
                 Clear
               </button>
@@ -612,12 +753,37 @@
           </div>
 
           <div class="panel-block">
-            <h2>Constants</h2>
+            <div class="panel-header">
+              <div class="panel-title">
+                <span class="panel-icon panel-icon--const" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <path d="M12 4l6 8-6 8-6-8 6-8z" />
+                  </svg>
+                </span>
+                <div>
+                  <h2>Constants</h2>
+                  <p class="panel-subtitle">Built-in values.</p>
+                </div>
+              </div>
+            </div>
             <ul class="list" id="constList"></ul>
           </div>
-
           <div class="panel-block">
-            <h2>Reference</h2>
+            <div class="panel-header">
+              <div class="panel-title">
+                <span class="panel-icon panel-icon--ref" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <path d="M6 7h12" />
+                    <path d="M6 12h12" />
+                    <path d="M6 17h12" />
+                  </svg>
+                </span>
+                <div>
+                  <h2>Reference</h2>
+                  <p class="panel-subtitle">Operator cheatsheet.</p>
+                </div>
+              </div>
+            </div>
             <div class="reference-grid">
               <span class="reference-pill">+ add</span>
               <span class="reference-pill">- subtract</span>
@@ -631,7 +797,22 @@
           </div>
 
           <div class="panel-block">
-            <h2>Session Tools</h2>
+            <div class="panel-header">
+              <div class="panel-title">
+                <span class="panel-icon panel-icon--tools" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <path d="M4 7h16" />
+                    <path d="M7 7v10" />
+                    <path d="M17 7v10" />
+                    <rect x="4" y="7" width="16" height="12" rx="2" />
+                  </svg>
+                </span>
+                <div>
+                  <h2>Session Tools</h2>
+                  <p class="panel-subtitle">Export or reset.</p>
+                </div>
+              </div>
+            </div>
             <div class="tool-row">
               <button type="button" class="chip ghost" data-action="clear-all">
                 Reset all
@@ -647,7 +828,19 @@
           </div>
 
           <div class="panel-block">
-            <h2>Examples</h2>
+            <div class="panel-header">
+              <div class="panel-title">
+                <span class="panel-icon panel-icon--examples" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="img">
+                    <path d="M12 4l2.5 4.8 5.3.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4-3.9-3.8 5.3-.8L12 4z" />
+                  </svg>
+                </span>
+                <div>
+                  <h2>Examples</h2>
+                  <p class="panel-subtitle">Tap to explore.</p>
+                </div>
+              </div>
+            </div>
             <div class="example-row">
               <button
                 type="button"

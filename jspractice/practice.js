@@ -411,6 +411,18 @@ const DEFAULT_SETTINGS = {
   smart: true,
 };
 const settings = { ...DEFAULT_SETTINGS };
+const DEFAULT_GRAPH = {
+  expression: "sin(x)",
+  xMin: -6.283,
+  xMax: 6.283,
+  yMin: -2,
+  yMax: 2,
+  autoY: true,
+  grid: true,
+  samples: 160,
+  autoPlot: true,
+};
+const graphState = { ...DEFAULT_GRAPH };
 const storageKey = "prismcalc-state";
 
 const themes = [
@@ -493,6 +505,25 @@ const themes = [
 ];
 let currentThemeIndex = 0;
 let numberFormatter = null;
+
+const defaultSnippets = [
+  {
+    id: "hyp",
+    label: "Hypotenuse",
+    value: "sqrt(a^2 + b^2)",
+  },
+  {
+    id: "circle",
+    label: "Circle area",
+    value: "pi * r^2",
+  },
+  {
+    id: "compound",
+    label: "Compound",
+    value: "p * (1 + r) ^ t",
+  },
+];
+let snippets = defaultSnippets.map((snippet) => ({ ...snippet }));
 
 const libraryData = [
   {
@@ -651,6 +682,37 @@ const libraryData = [
   },
 ];
 
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function createSnippetId() {
+  return `sn-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function sanitizeSnippets(list) {
+  if (!Array.isArray(list)) return [];
+  const seen = new Set();
+  const result = [];
+  for (const item of list) {
+    if (!item || typeof item !== "object") continue;
+    const value = typeof item.value === "string" ? item.value.trim() : "";
+    if (!value) continue;
+    const label = typeof item.label === "string" ? item.label.trim() : "";
+    let id = typeof item.id === "string" ? item.id : createSnippetId();
+    if (seen.has(id)) {
+      id = createSnippetId();
+    }
+    seen.add(id);
+    result.push({
+      id,
+      label: label || `Snippet ${result.length + 1}`,
+      value,
+    });
+  }
+  return result;
+}
+
 function updateFormatter() {
   numberFormatter = new Intl.NumberFormat("en-US", {
     maximumFractionDigits: settings.precision,
@@ -697,6 +759,8 @@ function persistState() {
     memory: calc.memory,
     settings,
     themeIndex: currentThemeIndex,
+    snippets,
+    graphState,
   };
   try {
     localStorage.setItem(storageKey, JSON.stringify(payload));
@@ -721,6 +785,9 @@ function loadState() {
         }
         if (typeof saved.settings.group === "boolean") {
           settings.group = saved.settings.group;
+        }
+        if (typeof saved.settings.smart === "boolean") {
+          settings.smart = saved.settings.smart;
         }
       }
       if (Number.isFinite(saved.memory)) {
@@ -749,6 +816,38 @@ function loadState() {
       }
       if (Number.isInteger(saved.themeIndex)) {
         currentThemeIndex = saved.themeIndex;
+      }
+      if (saved.graphState && typeof saved.graphState === "object") {
+        if (typeof saved.graphState.expression === "string") {
+          graphState.expression = saved.graphState.expression;
+        }
+        if (Number.isFinite(saved.graphState.xMin)) {
+          graphState.xMin = saved.graphState.xMin;
+        }
+        if (Number.isFinite(saved.graphState.xMax)) {
+          graphState.xMax = saved.graphState.xMax;
+        }
+        if (Number.isFinite(saved.graphState.yMin)) {
+          graphState.yMin = saved.graphState.yMin;
+        }
+        if (Number.isFinite(saved.graphState.yMax)) {
+          graphState.yMax = saved.graphState.yMax;
+        }
+        if (Number.isFinite(saved.graphState.samples)) {
+          graphState.samples = clamp(Math.round(saved.graphState.samples), 40, 600);
+        }
+        if (typeof saved.graphState.autoY === "boolean") {
+          graphState.autoY = saved.graphState.autoY;
+        }
+        if (typeof saved.graphState.grid === "boolean") {
+          graphState.grid = saved.graphState.grid;
+        }
+        if (typeof saved.graphState.autoPlot === "boolean") {
+          graphState.autoPlot = saved.graphState.autoPlot;
+        }
+      }
+      if (Array.isArray(saved.snippets)) {
+        snippets = sanitizeSnippets(saved.snippets);
       }
     }
   } catch (error) {
@@ -782,10 +881,31 @@ ready(() => {
   const groupToggle = document.getElementById("groupToggle");
   const liveBadge = document.getElementById("liveBadge");
   const themeBadge = document.getElementById("themeBadge");
+  const snippetLabel = document.getElementById("snippetLabel");
+  const snippetValue = document.getElementById("snippetValue");
+  const snippetList = document.getElementById("snippetList");
+  const shortcutOverlay = document.getElementById("shortcutOverlay");
+
+  const graphExpression = document.getElementById("graphExpression");
+  const graphXMin = document.getElementById("graphXMin");
+  const graphXMax = document.getElementById("graphXMax");
+  const graphYMin = document.getElementById("graphYMin");
+  const graphYMax = document.getElementById("graphYMax");
+  const graphSamples = document.getElementById("graphSamples");
+  const graphAutoY = document.getElementById("graphAutoY");
+  const graphGrid = document.getElementById("graphGrid");
+  const graphAutoPlot = document.getElementById("graphAutoPlot");
+  const graphCanvas = document.getElementById("graphCanvas");
+  const graphCoords = document.getElementById("graphCoords");
+  const graphRange = document.getElementById("graphRange");
+  const graphCtx = graphCanvas ? graphCanvas.getContext("2d") : null;
 
   let lastResult = calc.vars.ans ?? 0;
   let statusTimer = null;
   let liveTimer = null;
+  let graphTimer = null;
+  let graphData = null;
+  let graphSize = { width: 0, height: 0, ratio: 1 };
 
   function setStatus(message, kind, timeout = 2500) {
     if (!statusEl) return;
@@ -956,6 +1076,46 @@ ready(() => {
     }
   }
 
+  function renderSnippets() {
+    if (!snippetList) return;
+    snippetList.innerHTML = "";
+    if (snippets.length === 0) {
+      const empty = document.createElement("li");
+      empty.className = "empty";
+      empty.textContent = "No snippets yet.";
+      snippetList.appendChild(empty);
+      return;
+    }
+    for (const snippet of snippets) {
+      const li = document.createElement("li");
+      li.className = "snippet-item";
+      const header = document.createElement("div");
+      header.className = "snippet-header";
+      const insertButton = document.createElement("button");
+      insertButton.type = "button";
+      insertButton.className = "snippet-insert";
+      insertButton.dataset.insert = snippet.value;
+      insertButton.textContent = snippet.label;
+      const actions = document.createElement("div");
+      actions.className = "snippet-actions";
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.className = "snippet-delete";
+      deleteButton.dataset.action = "delete-snippet";
+      deleteButton.dataset.snippetId = snippet.id;
+      deleteButton.textContent = "Delete";
+      actions.appendChild(deleteButton);
+      header.appendChild(insertButton);
+      header.appendChild(actions);
+      const value = document.createElement("span");
+      value.className = "snippet-value";
+      value.textContent = snippet.value;
+      li.appendChild(header);
+      li.appendChild(value);
+      snippetList.appendChild(li);
+    }
+  }
+
   function setResult(value, preview = false) {
     if (!resultEl) return;
     resultEl.textContent = formatValue(value);
@@ -968,6 +1128,17 @@ ready(() => {
   function evaluatePreview(expression) {
     const snapshot = calc.vars;
     const tempVars = { ...calc.vars };
+    calc.vars = tempVars;
+    try {
+      return calc.evaluate(expression, { record: false });
+    } finally {
+      calc.vars = snapshot;
+    }
+  }
+
+  function evaluateWithVars(expression, extraVars) {
+    const snapshot = calc.vars;
+    const tempVars = { ...calc.vars, ...extraVars };
     calc.vars = tempVars;
     try {
       return calc.evaluate(expression, { record: false });
@@ -1046,7 +1217,364 @@ ready(() => {
     return Promise.resolve();
   }
 
-  function handleAction(action) {
+  function toggleHelpOverlay(force) {
+    if (!shortcutOverlay) return;
+    const isOpen = shortcutOverlay.classList.contains("is-open");
+    const nextState = typeof force === "boolean" ? force : !isOpen;
+    shortcutOverlay.classList.toggle("is-open", nextState);
+    shortcutOverlay.setAttribute("aria-hidden", nextState ? "false" : "true");
+    document.body.classList.toggle("no-scroll", nextState);
+    if (nextState) {
+      const focusTarget = shortcutOverlay.querySelector("button");
+      if (focusTarget) focusTarget.focus();
+    }
+  }
+
+  function readNumberInput(inputEl, fallback) {
+    if (!inputEl) return fallback;
+    const value = Number(inputEl.value);
+    return Number.isFinite(value) ? value : fallback;
+  }
+
+  function syncGraphInputs() {
+    if (graphExpression) graphExpression.value = graphState.expression;
+    if (graphXMin) graphXMin.value = String(graphState.xMin);
+    if (graphXMax) graphXMax.value = String(graphState.xMax);
+    if (graphYMin) graphYMin.value = String(graphState.yMin);
+    if (graphYMax) graphYMax.value = String(graphState.yMax);
+    if (graphSamples) graphSamples.value = String(graphState.samples);
+    if (graphAutoY) graphAutoY.checked = graphState.autoY;
+    if (graphGrid) graphGrid.checked = graphState.grid;
+    if (graphAutoPlot) graphAutoPlot.checked = graphState.autoPlot;
+    if (graphYMin) graphYMin.disabled = graphState.autoY;
+    if (graphYMax) graphYMax.disabled = graphState.autoY;
+  }
+
+  function updateGraphStateFromInputs() {
+    if (graphExpression) {
+      graphState.expression = graphExpression.value.trim();
+    }
+    graphState.xMin = readNumberInput(graphXMin, graphState.xMin);
+    graphState.xMax = readNumberInput(graphXMax, graphState.xMax);
+    graphState.yMin = readNumberInput(graphYMin, graphState.yMin);
+    graphState.yMax = readNumberInput(graphYMax, graphState.yMax);
+    graphState.samples = clamp(
+      Math.round(readNumberInput(graphSamples, graphState.samples)),
+      40,
+      600
+    );
+    if (graphAutoY) graphState.autoY = graphAutoY.checked;
+    if (graphGrid) graphState.grid = graphGrid.checked;
+    if (graphAutoPlot) graphState.autoPlot = graphAutoPlot.checked;
+    if (graphSamples) graphSamples.value = String(graphState.samples);
+    if (graphYMin) graphYMin.disabled = graphState.autoY;
+    if (graphYMax) graphYMax.disabled = graphState.autoY;
+  }
+
+  function resizeGraphCanvas() {
+    if (!graphCanvas || !graphCtx) return;
+    const rect = graphCanvas.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+    const ratio = window.devicePixelRatio || 1;
+    graphCanvas.width = Math.floor(rect.width * ratio);
+    graphCanvas.height = Math.floor(rect.height * ratio);
+    graphCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    graphSize = { width: rect.width, height: rect.height, ratio };
+  }
+
+  function getThemeColor(name, fallback) {
+    if (typeof getComputedStyle === "undefined") return fallback;
+    const value = getComputedStyle(document.documentElement)
+      .getPropertyValue(name)
+      .trim();
+    return value || fallback;
+  }
+
+  function niceStep(range) {
+    if (!Number.isFinite(range) || range <= 0) return 1;
+    const rough = range / 6;
+    const pow = Math.pow(10, Math.floor(Math.log10(rough)));
+    const fraction = rough / pow;
+    let nice = 1;
+    if (fraction < 1.5) nice = 1;
+    else if (fraction < 3) nice = 2;
+    else if (fraction < 7) nice = 5;
+    else nice = 10;
+    return nice * pow;
+  }
+
+  function drawGraphGrid(ctx, bounds) {
+    const { width, height } = graphSize;
+    const xRange = bounds.xMax - bounds.xMin;
+    const yRange = bounds.yMax - bounds.yMin;
+    if (xRange === 0 || yRange === 0) return;
+    const mapX = (x) => ((x - bounds.xMin) / xRange) * width;
+    const mapY = (y) => height - ((y - bounds.yMin) / yRange) * height;
+    const xStep = niceStep(xRange);
+    const yStep = niceStep(yRange);
+    const xStart = Math.ceil(bounds.xMin / xStep) * xStep;
+    const yStart = Math.ceil(bounds.yMin / yStep) * yStep;
+    ctx.save();
+    ctx.strokeStyle = "rgba(28, 28, 38, 0.08)";
+    ctx.lineWidth = 1;
+    for (let x = xStart; x <= bounds.xMax; x += xStep) {
+      const cx = mapX(x);
+      ctx.beginPath();
+      ctx.moveTo(cx, 0);
+      ctx.lineTo(cx, height);
+      ctx.stroke();
+    }
+    for (let y = yStart; y <= bounds.yMax; y += yStep) {
+      const cy = mapY(y);
+      ctx.beginPath();
+      ctx.moveTo(0, cy);
+      ctx.lineTo(width, cy);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawGraph(points, bounds) {
+    if (!graphCtx) return;
+    const { width, height } = graphSize;
+    if (width === 0 || height === 0) return;
+    graphCtx.clearRect(0, 0, width, height);
+    const gradient = graphCtx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, getThemeColor("--accent-d-soft", "#dbe9ff"));
+    gradient.addColorStop(1, getThemeColor("--accent-f-soft", "#ead9ff"));
+    graphCtx.fillStyle = gradient;
+    graphCtx.fillRect(0, 0, width, height);
+
+    if (graphState.grid) {
+      drawGraphGrid(graphCtx, bounds);
+    }
+
+    const xRange = bounds.xMax - bounds.xMin;
+    const yRange = bounds.yMax - bounds.yMin;
+    if (xRange === 0 || yRange === 0) return;
+    const mapX = (x) => ((x - bounds.xMin) / xRange) * width;
+    const mapY = (y) => height - ((y - bounds.yMin) / yRange) * height;
+
+    graphCtx.save();
+    graphCtx.strokeStyle = getThemeColor("--accent-d", "#3a86ff");
+    graphCtx.lineWidth = 1.5;
+    if (bounds.xMin < 0 && bounds.xMax > 0) {
+      const x0 = mapX(0);
+      graphCtx.beginPath();
+      graphCtx.moveTo(x0, 0);
+      graphCtx.lineTo(x0, height);
+      graphCtx.stroke();
+    }
+    if (bounds.yMin < 0 && bounds.yMax > 0) {
+      const y0 = mapY(0);
+      graphCtx.beginPath();
+      graphCtx.moveTo(0, y0);
+      graphCtx.lineTo(width, y0);
+      graphCtx.stroke();
+    }
+    graphCtx.restore();
+
+    graphCtx.save();
+    graphCtx.strokeStyle = getThemeColor("--accent-f", "#8338ec");
+    graphCtx.lineWidth = 2.2;
+    graphCtx.beginPath();
+    let started = false;
+    for (const point of points) {
+      if (!point) {
+        started = false;
+        continue;
+      }
+      const cx = mapX(point.x);
+      const cy = mapY(point.y);
+      if (!started) {
+        graphCtx.moveTo(cx, cy);
+        started = true;
+      } else {
+        graphCtx.lineTo(cx, cy);
+      }
+    }
+    graphCtx.stroke();
+    graphCtx.restore();
+  }
+
+  function plotGraph(options = {}) {
+    const { silent = false } = options;
+    if (!graphCanvas || !graphCtx) return;
+    updateGraphStateFromInputs();
+    const expression = graphState.expression.trim();
+    if (!expression) {
+      if (!silent) setStatus("Enter a function to plot.", "warn");
+      return;
+    }
+
+    let xMin = graphState.xMin;
+    let xMax = graphState.xMax;
+    if (!Number.isFinite(xMin) || !Number.isFinite(xMax)) {
+      if (!silent) setStatus("Invalid X range.", "error");
+      return;
+    }
+    if (xMin === xMax) {
+      xMax = xMin + 1;
+      if (!silent) setStatus("Expanded X range.", "warn", 1400);
+    }
+    if (xMin > xMax) {
+      const swap = xMin;
+      xMin = xMax;
+      xMax = swap;
+      if (!silent) setStatus("Swapped X range.", "warn", 1400);
+    }
+    graphState.xMin = xMin;
+    graphState.xMax = xMax;
+    if (graphXMin) graphXMin.value = String(xMin);
+    if (graphXMax) graphXMax.value = String(xMax);
+
+    const samples = clamp(Math.round(graphState.samples), 40, 600);
+    graphState.samples = samples;
+    if (graphSamples) graphSamples.value = String(samples);
+
+    const points = [];
+    let dataMin = Infinity;
+    let dataMax = -Infinity;
+    const step = (xMax - xMin) / (samples - 1);
+
+    for (let i = 0; i < samples; i += 1) {
+      const x = xMin + step * i;
+      let y = NaN;
+      try {
+        y = evaluateWithVars(expression, { x });
+      } catch (error) {
+        y = NaN;
+      }
+      if (Number.isFinite(y)) {
+        dataMin = Math.min(dataMin, y);
+        dataMax = Math.max(dataMax, y);
+        points.push({ x, y });
+      } else {
+        points.push(null);
+      }
+    }
+
+    if (!Number.isFinite(dataMin) || !Number.isFinite(dataMax)) {
+      if (!silent) setStatus("No plottable values for that range.", "error");
+      return;
+    }
+
+    let yMin = graphState.autoY ? dataMin : graphState.yMin;
+    let yMax = graphState.autoY ? dataMax : graphState.yMax;
+
+    if (!Number.isFinite(yMin) || !Number.isFinite(yMax)) {
+      yMin = dataMin;
+      yMax = dataMax;
+    }
+    if (yMin === yMax) {
+      yMin -= 1;
+      yMax += 1;
+    }
+    if (yMin > yMax) {
+      const swap = yMin;
+      yMin = yMax;
+      yMax = swap;
+      if (!silent) setStatus("Swapped Y range.", "warn", 1400);
+    }
+
+    if (graphState.autoY) {
+      const range = yMax - yMin || 1;
+      const pad = range * 0.12;
+      yMin -= pad;
+      yMax += pad;
+    }
+
+    graphState.yMin = yMin;
+    graphState.yMax = yMax;
+    if (graphYMin) graphYMin.value = String(graphState.yMin);
+    if (graphYMax) graphYMax.value = String(graphState.yMax);
+
+    resizeGraphCanvas();
+    graphData = {
+      points,
+      bounds: { xMin, xMax, yMin, yMax },
+      expression,
+      dataMin,
+      dataMax,
+    };
+    drawGraph(points, graphData.bounds);
+
+    if (graphCoords) graphCoords.textContent = "x: -, y: -";
+    if (graphRange) {
+      graphRange.textContent = `x: ${formatValue(xMin)} to ${formatValue(
+        xMax
+      )} | y: ${formatValue(dataMin)} to ${formatValue(dataMax)}`;
+    }
+
+    if (!silent) setStatus("Graph updated.", "ok", 1400);
+    persistState();
+  }
+
+  function scheduleGraphPlot() {
+    if (!graphState.autoPlot) return;
+    if (graphTimer) clearTimeout(graphTimer);
+    graphTimer = setTimeout(() => {
+      plotGraph({ silent: true });
+    }, 280);
+  }
+
+  function resetGraphState() {
+    Object.assign(graphState, DEFAULT_GRAPH);
+    syncGraphInputs();
+    plotGraph({ silent: true });
+    setStatus("Graph reset.", "ok", 1400);
+    persistState();
+  }
+
+  function handleGraphHover(event) {
+    if (!graphCanvas || !graphCoords || !graphData) return;
+    const rect = graphCanvas.getBoundingClientRect();
+    const ratio = (event.clientX - rect.left) / rect.width;
+    const x =
+      graphData.bounds.xMin +
+      ratio * (graphData.bounds.xMax - graphData.bounds.xMin);
+    let y = NaN;
+    try {
+      y = evaluateWithVars(graphData.expression, { x });
+    } catch (error) {
+      y = NaN;
+    }
+    if (Number.isFinite(y)) {
+      graphCoords.textContent = `x: ${formatValue(x)}, y: ${formatValue(y)}`;
+    } else {
+      graphCoords.textContent = `x: ${formatValue(x)}, y: --`;
+    }
+  }
+
+  function addSnippet(labelInput, valueInput) {
+    const value = typeof valueInput === "string" ? valueInput.trim() : "";
+    if (!value) {
+      setStatus("Add a snippet expression first.", "warn");
+      return;
+    }
+    const label =
+      typeof labelInput === "string" && labelInput.trim()
+        ? labelInput.trim()
+        : `Snippet ${snippets.length + 1}`;
+    const snippet = {
+      id: createSnippetId(),
+      label,
+      value,
+    };
+    snippets = [snippet, ...snippets];
+    renderSnippets();
+    setStatus("Snippet saved.", "ok", 1400);
+    persistState();
+  }
+
+  function deleteSnippet(id) {
+    snippets = snippets.filter((snippet) => snippet.id !== id);
+    renderSnippets();
+    setStatus("Snippet removed.", "ok", 1400);
+    persistState();
+  }
+
+  function handleAction(action, element) {
     switch (action) {
       case "evaluate":
         evaluateExpression(input.value);
@@ -1157,6 +1685,7 @@ ready(() => {
         const nextIndex = (currentThemeIndex + 1) % themes.length;
         applyTheme(nextIndex);
         updateBadges();
+        plotGraph({ silent: true });
         setStatus(`Theme: ${themes[currentThemeIndex].name}`, "ok");
         persistState();
         return;
@@ -1168,6 +1697,8 @@ ready(() => {
           memory: calc.memory,
           settings,
           themeIndex: currentThemeIndex,
+          snippets,
+          graphState,
         };
         const blob = new Blob([JSON.stringify(payload, null, 2)], {
           type: "application/json",
@@ -1181,6 +1712,52 @@ ready(() => {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
         setStatus("Session exported.", "ok");
+        return;
+      }
+      case "plot-graph":
+        plotGraph();
+        return;
+      case "reset-graph":
+        resetGraphState();
+        return;
+      case "graph-use-expression":
+        if (graphExpression) {
+          graphExpression.value = input.value.trim();
+          graphState.expression = graphExpression.value;
+          plotGraph({ silent: true });
+          setStatus("Graph expression updated.", "ok", 1400);
+          persistState();
+        }
+        return;
+      case "toggle-help":
+        toggleHelpOverlay();
+        return;
+      case "close-help":
+        toggleHelpOverlay(false);
+        return;
+      case "add-snippet":
+        addSnippet(snippetLabel?.value, snippetValue?.value);
+        if (snippetLabel) snippetLabel.value = "";
+        if (snippetValue) snippetValue.value = "";
+        return;
+      case "save-current":
+        if (!input.value.trim()) {
+          setStatus("Enter an expression to save.", "warn");
+          return;
+        }
+        addSnippet(snippetLabel?.value, input.value);
+        if (snippetLabel) snippetLabel.value = "";
+        if (snippetValue) snippetValue.value = "";
+        return;
+      case "clear-snippets":
+        snippets = [];
+        renderSnippets();
+        setStatus("Snippets cleared.", "ok", 1400);
+        persistState();
+        return;
+      case "delete-snippet": {
+        const id = element?.dataset.snippetId;
+        if (id) deleteSnippet(id);
         return;
       }
       default:
@@ -1198,7 +1775,7 @@ ready(() => {
     }
     const actionButton = event.target.closest("[data-action]");
     if (actionButton) {
-      handleAction(actionButton.dataset.action);
+      handleAction(actionButton.dataset.action, actionButton);
     }
   });
 
@@ -1235,6 +1812,17 @@ ready(() => {
     librarySearch.addEventListener("input", () => renderLibrary());
   }
 
+  if (snippetValue) {
+    snippetValue.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addSnippet(snippetLabel?.value, snippetValue.value);
+        if (snippetLabel) snippetLabel.value = "";
+        snippetValue.value = "";
+      }
+    });
+  }
+
   if (precisionRange) {
     precisionRange.value = String(settings.precision);
     precisionRange.addEventListener("input", () => {
@@ -1247,6 +1835,7 @@ ready(() => {
       renderConstants();
       renderMemory();
       if (resultEl) resultEl.textContent = formatValue(lastResult);
+      plotGraph({ silent: true });
       persistState();
     });
   }
@@ -1278,9 +1867,111 @@ ready(() => {
       renderConstants();
       renderMemory();
       if (resultEl) resultEl.textContent = formatValue(lastResult);
+      plotGraph({ silent: true });
       persistState();
     });
   }
+
+  if (graphExpression) {
+    graphExpression.addEventListener("input", () => {
+      graphState.expression = graphExpression.value.trim();
+      scheduleGraphPlot();
+    });
+  }
+
+  if (graphXMin) {
+    graphXMin.addEventListener("input", () => scheduleGraphPlot());
+  }
+  if (graphXMax) {
+    graphXMax.addEventListener("input", () => scheduleGraphPlot());
+  }
+  if (graphYMin) {
+    graphYMin.addEventListener("input", () => scheduleGraphPlot());
+  }
+  if (graphYMax) {
+    graphYMax.addEventListener("input", () => scheduleGraphPlot());
+  }
+  if (graphSamples) {
+    graphSamples.addEventListener("input", () => scheduleGraphPlot());
+  }
+  if (graphAutoY) {
+    graphAutoY.addEventListener("change", () => {
+      graphState.autoY = graphAutoY.checked;
+      if (graphYMin) graphYMin.disabled = graphState.autoY;
+      if (graphYMax) graphYMax.disabled = graphState.autoY;
+      plotGraph({ silent: true });
+      persistState();
+    });
+  }
+  if (graphGrid) {
+    graphGrid.addEventListener("change", () => {
+      graphState.grid = graphGrid.checked;
+      plotGraph({ silent: true });
+      persistState();
+    });
+  }
+  if (graphAutoPlot) {
+    graphAutoPlot.addEventListener("change", () => {
+      graphState.autoPlot = graphAutoPlot.checked;
+      if (graphState.autoPlot) {
+        scheduleGraphPlot();
+      }
+      persistState();
+    });
+  }
+
+  if (graphCanvas) {
+    graphCanvas.addEventListener("mousemove", handleGraphHover);
+    graphCanvas.addEventListener("mouseleave", () => {
+      if (graphCoords) graphCoords.textContent = "x: -, y: -";
+    });
+  }
+
+  if (shortcutOverlay) {
+    shortcutOverlay.addEventListener("click", (event) => {
+      if (event.target === shortcutOverlay) {
+        toggleHelpOverlay(false);
+      }
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    const isMeta = event.ctrlKey || event.metaKey;
+    const key = event.key;
+    if (key === "?" && !isMeta && !event.altKey) {
+      event.preventDefault();
+      toggleHelpOverlay();
+      return;
+    }
+    if (key === "Escape" && shortcutOverlay?.classList.contains("is-open")) {
+      event.preventDefault();
+      toggleHelpOverlay(false);
+      return;
+    }
+    if (isMeta && key === "Enter") {
+      if (document.activeElement !== input) {
+        event.preventDefault();
+        evaluateExpression(input.value);
+      }
+      return;
+    }
+    if (isMeta && event.shiftKey) {
+      const lower = key.toLowerCase();
+      if (lower === "c") {
+        event.preventDefault();
+        handleAction("copy-result");
+      } else if (lower === "t") {
+        event.preventDefault();
+        handleAction("shuffle-theme");
+      } else if (lower === "p") {
+        event.preventDefault();
+        plotGraph();
+      } else if (lower === "s") {
+        event.preventDefault();
+        handleAction("save-current");
+      }
+    }
+  });
 
   applyTheme(currentThemeIndex);
   updateBadges();
@@ -1288,7 +1979,19 @@ ready(() => {
   renderVars();
   renderConstants();
   renderLibrary();
+  renderSnippets();
   renderMemory();
   updateStats();
   setResult(calc.vars.ans ?? 0, false);
+
+  syncGraphInputs();
+  requestAnimationFrame(() => {
+    resizeGraphCanvas();
+    plotGraph({ silent: true });
+  });
+
+  window.addEventListener("resize", () => {
+    resizeGraphCanvas();
+    plotGraph({ silent: true });
+  });
 });
