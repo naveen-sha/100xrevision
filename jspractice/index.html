@@ -56,191 +56,91 @@
       </header>
 
       <main class="workspace">
-        <section class="panel calc-panel">
-          <div class="display">
-            <div class="label-row">
-              <label for="expression">Expression</label>
-              <span class="hint">Enter to evaluate, Esc to clear</span>
-            </div>
-            <input
-              id="expression"
-              type="text"
-              autocomplete="off"
-              spellcheck="false"
-              placeholder="ex: sqrt(3^2 + 4^2) + sin(rad(45))"
-            />
-
-            <div class="toolbar">
-              <label class="toggle">
-                <input id="liveToggle" type="checkbox" />
-                <span class="toggle-track"></span>
-                <span class="toggle-text">Live preview</span>
-              </label>
-              <label class="toggle">
-                <input id="groupToggle" type="checkbox" />
-                <span class="toggle-track"></span>
-                <span class="toggle-text">Group digits</span>
-              </label>
-              <div class="range">
-                <span class="range-label">Precision</span>
-                <input
-                  id="precisionRange"
-                  type="range"
-                  min="0"
-                  max="12"
-                  value="8"
-                />
-                <span class="range-value" id="precisionValue">8</span>
+        <div class="main-stack">
+          <section class="panel calc-panel">
+            <div class="display">
+              <div class="label-row">
+                <label for="expression">Expression</label>
+                <span class="hint">Enter to evaluate, Esc to clear</span>
               </div>
-              <div class="toolbar-actions">
-                <button type="button" class="chip action" data-action="copy-result">
-                  Copy
-                </button>
-                <button
-                  type="button"
-                  class="chip action"
-                  data-action="shuffle-theme"
-                >
-                  Shuffle color
-                </button>
+              <input
+                id="expression"
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="ex: sqrt(3^2 + 4^2) + sin(rad(45))"
+              />
+
+              <div class="toolbar">
+                <label class="toggle">
+                  <input id="liveToggle" type="checkbox" />
+                  <span class="toggle-track"></span>
+                  <span class="toggle-text">Live preview</span>
+                </label>
+                <label class="toggle">
+                  <input id="groupToggle" type="checkbox" />
+                  <span class="toggle-track"></span>
+                  <span class="toggle-text">Group digits</span>
+                </label>
+                <div class="range">
+                  <span class="range-label">Precision</span>
+                  <input
+                    id="precisionRange"
+                    type="range"
+                    min="0"
+                    max="12"
+                    value="8"
+                  />
+                  <span class="range-value" id="precisionValue">8</span>
+                </div>
+                <div class="toolbar-actions">
+                  <button type="button" class="chip action" data-action="copy-result">
+                    Copy
+                  </button>
+                  <button
+                    type="button"
+                    class="chip action"
+                    data-action="shuffle-theme"
+                  >
+                    Shuffle color
+                  </button>
+                  <button
+                    type="button"
+                    class="chip action"
+                    data-action="toggle-help"
+                  >
+                    Shortcuts
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div class="result-row">
-              <span class="result-label">Result</span>
-              <span class="result-value" id="result" aria-live="polite">0</span>
-            </div>
-            <div class="status" id="status" aria-live="polite"></div>
-          </div>
-
-          <div class="builder">
-            <span class="builder-label">Quick inserts</span>
-            <div class="builder-row">
-              <button type="button" class="chip tone-a" data-insert="ans">
-                ans
-              </button>
-              <button type="button" class="chip tone-b" data-insert="x = ">
-                x =
-              </button>
-              <button
-                type="button"
-                class="chip tone-c"
-                data-insert="()"
-                data-cursor="-1"
-              >
-                ()
-              </button>
-              <button
-                type="button"
-                class="chip tone-d"
-                data-insert="pow()"
-                data-cursor="-1"
-              >
-                pow
-              </button>
-              <button
-                type="button"
-                class="chip tone-e"
-                data-insert="clamp()"
-                data-cursor="-1"
-              >
-                clamp
-              </button>
-              <button
-                type="button"
-                class="chip tone-a"
-                data-insert="sqrt()"
-                data-cursor="-1"
-              >
-                sqrt
-              </button>
-              <button
-                type="button"
-                class="chip tone-b"
-                data-insert="log()"
-                data-cursor="-1"
-              >
-                log
-              </button>
-              <button
-                type="button"
-                class="chip tone-c"
-                data-insert="min()"
-                data-cursor="-1"
-              >
-                min
-              </button>
-            </div>
-          </div>
-
-          <div class="palette">
-            <div class="palette-group" data-tone="a">
-              <div class="palette-label">Trig</div>
-              <div class="palette-chips">
-                <button type="button" class="chip" data-insert="sin()" data-cursor="-1">
-                  sin
-                </button>
-                <button type="button" class="chip" data-insert="cos()" data-cursor="-1">
-                  cos
-                </button>
-                <button type="button" class="chip" data-insert="tan()" data-cursor="-1">
-                  tan
-                </button>
-                <button
-                  type="button"
-                  class="chip"
-                  data-insert="asin()"
-                  data-cursor="-1"
-                >
-                  asin
-                </button>
-                <button
-                  type="button"
-                  class="chip"
-                  data-insert="acos()"
-                  data-cursor="-1"
-                >
-                  acos
-                </button>
-                <button
-                  type="button"
-                  class="chip"
-                  data-insert="atan()"
-                  data-cursor="-1"
-                >
-                  atan
-                </button>
-                <button type="button" class="chip" data-insert="deg()" data-cursor="-1">
-                  deg
-                </button>
-                <button type="button" class="chip" data-insert="rad()" data-cursor="-1">
-                  rad
-                </button>
+              <div class="result-row">
+                <span class="result-label">Result</span>
+                <span class="result-value" id="result" aria-live="polite">0</span>
               </div>
+              <div class="status" id="status" aria-live="polite"></div>
             </div>
 
-            <div class="palette-group" data-tone="b">
-              <div class="palette-label">Powers</div>
-              <div class="palette-chips">
-                <button
-                  type="button"
-                  class="chip"
-                  data-insert="sqrt()"
-                  data-cursor="-1"
-                >
-                  sqrt
+            <div class="builder">
+              <span class="builder-label">Quick inserts</span>
+              <div class="builder-row">
+                <button type="button" class="chip tone-a" data-insert="ans">
+                  ans
+                </button>
+                <button type="button" class="chip tone-b" data-insert="x = ">
+                  x =
                 </button>
                 <button
                   type="button"
-                  class="chip"
-                  data-insert="cbrt()"
+                  class="chip tone-c"
+                  data-insert="()"
                   data-cursor="-1"
                 >
-                  cbrt
+                  ()
                 </button>
                 <button
                   type="button"
-                  class="chip"
+                  class="chip tone-d"
                   data-insert="pow()"
                   data-cursor="-1"
                 >
@@ -248,206 +148,395 @@
                 </button>
                 <button
                   type="button"
-                  class="chip"
-                  data-insert="exp()"
-                  data-cursor="-1"
-                >
-                  exp
-                </button>
-                <button type="button" class="chip" data-insert="^">^</button>
-                <button type="button" class="chip" data-insert="!">!</button>
-              </div>
-            </div>
-
-            <div class="palette-group" data-tone="c">
-              <div class="palette-label">Rounding</div>
-              <div class="palette-chips">
-                <button
-                  type="button"
-                  class="chip"
-                  data-insert="round()"
-                  data-cursor="-1"
-                >
-                  round
-                </button>
-                <button
-                  type="button"
-                  class="chip"
-                  data-insert="floor()"
-                  data-cursor="-1"
-                >
-                  floor
-                </button>
-                <button
-                  type="button"
-                  class="chip"
-                  data-insert="ceil()"
-                  data-cursor="-1"
-                >
-                  ceil
-                </button>
-                <button
-                  type="button"
-                  class="chip"
-                  data-insert="abs()"
-                  data-cursor="-1"
-                >
-                  abs
-                </button>
-                <button
-                  type="button"
-                  class="chip"
-                  data-insert="mod()"
-                  data-cursor="-1"
-                >
-                  mod
-                </button>
-              </div>
-            </div>
-
-            <div class="palette-group" data-tone="d">
-              <div class="palette-label">Stats</div>
-              <div class="palette-chips">
-                <button
-                  type="button"
-                  class="chip"
-                  data-insert="min()"
-                  data-cursor="-1"
-                >
-                  min
-                </button>
-                <button
-                  type="button"
-                  class="chip"
-                  data-insert="max()"
-                  data-cursor="-1"
-                >
-                  max
-                </button>
-                <button
-                  type="button"
-                  class="chip"
+                  class="chip tone-e"
                   data-insert="clamp()"
                   data-cursor="-1"
                 >
                   clamp
                 </button>
-                <button type="button" class="chip" data-insert="pi">pi</button>
-                <button type="button" class="chip" data-insert="e">e</button>
+                <button
+                  type="button"
+                  class="chip tone-a"
+                  data-insert="sqrt()"
+                  data-cursor="-1"
+                >
+                  sqrt
+                </button>
+                <button
+                  type="button"
+                  class="chip tone-b"
+                  data-insert="log()"
+                  data-cursor="-1"
+                >
+                  log
+                </button>
+                <button
+                  type="button"
+                  class="chip tone-c"
+                  data-insert="min()"
+                  data-cursor="-1"
+                >
+                  min
+                </button>
               </div>
             </div>
-          </div>
 
-          <div class="memory-row">
-            <button type="button" class="chip ghost" data-action="mc">MC</button>
-            <button type="button" class="chip ghost" data-action="mr">MR</button>
-            <button type="button" class="chip ghost" data-action="mplus">M+</button>
-            <button type="button" class="chip ghost" data-action="mminus">M-</button>
-            <button type="button" class="chip ghost" data-action="clear-all">
-              Reset all
-            </button>
-          </div>
+            <div class="palette">
+              <div class="palette-group" data-tone="a">
+                <div class="palette-label">Trig</div>
+                <div class="palette-chips">
+                  <button type="button" class="chip" data-insert="sin()" data-cursor="-1">
+                    sin
+                  </button>
+                  <button type="button" class="chip" data-insert="cos()" data-cursor="-1">
+                    cos
+                  </button>
+                  <button type="button" class="chip" data-insert="tan()" data-cursor="-1">
+                    tan
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="asin()"
+                    data-cursor="-1"
+                  >
+                    asin
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="acos()"
+                    data-cursor="-1"
+                  >
+                    acos
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="atan()"
+                    data-cursor="-1"
+                  >
+                    atan
+                  </button>
+                  <button type="button" class="chip" data-insert="deg()" data-cursor="-1">
+                    deg
+                  </button>
+                  <button type="button" class="chip" data-insert="rad()" data-cursor="-1">
+                    rad
+                  </button>
+                </div>
+              </div>
 
-          <div class="keypad">
-            <button type="button" class="key ghost" data-insert="(">(</button>
-            <button type="button" class="key ghost" data-insert=")">)</button>
-            <button type="button" class="key operator" data-insert="^">^</button>
-            <button type="button" class="key operator" data-insert="%">%</button>
-            <button type="button" class="key operator" data-insert="!">!</button>
-            <button type="button" class="key primary" data-action="evaluate">
-              =
-            </button>
+              <div class="palette-group" data-tone="b">
+                <div class="palette-label">Powers</div>
+                <div class="palette-chips">
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="sqrt()"
+                    data-cursor="-1"
+                  >
+                    sqrt
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="cbrt()"
+                    data-cursor="-1"
+                  >
+                    cbrt
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="pow()"
+                    data-cursor="-1"
+                  >
+                    pow
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="exp()"
+                    data-cursor="-1"
+                  >
+                    exp
+                  </button>
+                  <button type="button" class="chip" data-insert="^">^</button>
+                  <button type="button" class="chip" data-insert="!">!</button>
+                </div>
+              </div>
 
-            <button type="button" class="key" data-insert="7">7</button>
-            <button type="button" class="key" data-insert="8">8</button>
-            <button type="button" class="key" data-insert="9">9</button>
-            <button type="button" class="key operator" data-insert="/">/</button>
-            <button
-              type="button"
-              class="key fn"
-              data-insert="sqrt()"
-              data-cursor="-1"
-            >
-              sqrt
-            </button>
-            <button
-              type="button"
-              class="key fn"
-              data-insert="cbrt()"
-              data-cursor="-1"
-            >
-              cbrt
-            </button>
+              <div class="palette-group" data-tone="c">
+                <div class="palette-label">Rounding</div>
+                <div class="palette-chips">
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="round()"
+                    data-cursor="-1"
+                  >
+                    round
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="floor()"
+                    data-cursor="-1"
+                  >
+                    floor
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="ceil()"
+                    data-cursor="-1"
+                  >
+                    ceil
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="abs()"
+                    data-cursor="-1"
+                  >
+                    abs
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="mod()"
+                    data-cursor="-1"
+                  >
+                    mod
+                  </button>
+                </div>
+              </div>
 
-            <button type="button" class="key" data-insert="4">4</button>
-            <button type="button" class="key" data-insert="5">5</button>
-            <button type="button" class="key" data-insert="6">6</button>
-            <button type="button" class="key operator" data-insert="*">*</button>
-            <button
-              type="button"
-              class="key fn"
-              data-insert="pow()"
-              data-cursor="-1"
-            >
-              pow
-            </button>
-            <button
-              type="button"
-              class="key fn"
-              data-insert="mod()"
-              data-cursor="-1"
-            >
-              mod
-            </button>
+              <div class="palette-group" data-tone="d">
+                <div class="palette-label">Stats</div>
+                <div class="palette-chips">
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="min()"
+                    data-cursor="-1"
+                  >
+                    min
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="max()"
+                    data-cursor="-1"
+                  >
+                    max
+                  </button>
+                  <button
+                    type="button"
+                    class="chip"
+                    data-insert="clamp()"
+                    data-cursor="-1"
+                  >
+                    clamp
+                  </button>
+                  <button type="button" class="chip" data-insert="pi">pi</button>
+                  <button type="button" class="chip" data-insert="e">e</button>
+                </div>
+              </div>
+            </div>
 
-            <button type="button" class="key" data-insert="1">1</button>
-            <button type="button" class="key" data-insert="2">2</button>
-            <button type="button" class="key" data-insert="3">3</button>
-            <button type="button" class="key operator" data-insert="-">-</button>
-            <button
-              type="button"
-              class="key fn"
-              data-insert="log()"
-              data-cursor="-1"
-            >
-              log
-            </button>
-            <button type="button" class="key fn" data-insert="ln()" data-cursor="-1">
-              ln
-            </button>
+            <div class="memory-row">
+              <button type="button" class="chip ghost" data-action="mc">MC</button>
+              <button type="button" class="chip ghost" data-action="mr">MR</button>
+              <button type="button" class="chip ghost" data-action="mplus">M+</button>
+              <button type="button" class="chip ghost" data-action="mminus">M-</button>
+              <button type="button" class="chip ghost" data-action="clear-all">
+                Reset all
+              </button>
+            </div>
 
-            <button type="button" class="key" data-insert="0">0</button>
-            <button type="button" class="key" data-insert=".">.</button>
-            <button type="button" class="key" data-insert=",">,</button>
-            <button type="button" class="key operator" data-insert="+">+</button>
-            <button type="button" class="key fn" data-insert="min()" data-cursor="-1">
-              min
-            </button>
-            <button type="button" class="key fn" data-insert="max()" data-cursor="-1">
-              max
-            </button>
+            <div class="keypad">
+              <button type="button" class="key ghost" data-insert="(">(</button>
+              <button type="button" class="key ghost" data-insert=")">)</button>
+              <button type="button" class="key operator" data-insert="^">^</button>
+              <button type="button" class="key operator" data-insert="%">%</button>
+              <button type="button" class="key operator" data-insert="!">!</button>
+              <button type="button" class="key primary" data-action="evaluate">
+                =
+              </button>
 
-            <button type="button" class="key" data-insert="pi">pi</button>
-            <button type="button" class="key" data-insert="e">e</button>
-            <button type="button" class="key ghost" data-action="use-ans">
-              ans
-            </button>
-            <button
-              type="button"
-              class="key fn"
-              data-insert="clamp()"
-              data-cursor="-1"
-            >
-              clamp
-            </button>
-            <button type="button" class="key ghost" data-action="backspace">
-              del
-            </button>
-            <button type="button" class="key ghost" data-action="clear">
-              clear
-            </button>
-          </div>
-        </section>
+              <button type="button" class="key" data-insert="7">7</button>
+              <button type="button" class="key" data-insert="8">8</button>
+              <button type="button" class="key" data-insert="9">9</button>
+              <button type="button" class="key operator" data-insert="/">/</button>
+              <button
+                type="button"
+                class="key fn"
+                data-insert="sqrt()"
+                data-cursor="-1"
+              >
+                sqrt
+              </button>
+              <button
+                type="button"
+                class="key fn"
+                data-insert="cbrt()"
+                data-cursor="-1"
+              >
+                cbrt
+              </button>
+
+              <button type="button" class="key" data-insert="4">4</button>
+              <button type="button" class="key" data-insert="5">5</button>
+              <button type="button" class="key" data-insert="6">6</button>
+              <button type="button" class="key operator" data-insert="*">*</button>
+              <button
+                type="button"
+                class="key fn"
+                data-insert="pow()"
+                data-cursor="-1"
+              >
+                pow
+              </button>
+              <button
+                type="button"
+                class="key fn"
+                data-insert="mod()"
+                data-cursor="-1"
+              >
+                mod
+              </button>
+
+              <button type="button" class="key" data-insert="1">1</button>
+              <button type="button" class="key" data-insert="2">2</button>
+              <button type="button" class="key" data-insert="3">3</button>
+              <button type="button" class="key operator" data-insert="-">-</button>
+              <button
+                type="button"
+                class="key fn"
+                data-insert="log()"
+                data-cursor="-1"
+              >
+                log
+              </button>
+              <button type="button" class="key fn" data-insert="ln()" data-cursor="-1">
+                ln
+              </button>
+
+              <button type="button" class="key" data-insert="0">0</button>
+              <button type="button" class="key" data-insert=".">.</button>
+              <button type="button" class="key" data-insert=",">,</button>
+              <button type="button" class="key operator" data-insert="+">+</button>
+              <button type="button" class="key fn" data-insert="min()" data-cursor="-1">
+                min
+              </button>
+              <button type="button" class="key fn" data-insert="max()" data-cursor="-1">
+                max
+              </button>
+
+              <button type="button" class="key" data-insert="pi">pi</button>
+              <button type="button" class="key" data-insert="e">e</button>
+              <button type="button" class="key ghost" data-action="use-ans">
+                ans
+              </button>
+              <button
+                type="button"
+                class="key fn"
+                data-insert="clamp()"
+                data-cursor="-1"
+              >
+                clamp
+              </button>
+              <button type="button" class="key ghost" data-action="backspace">
+                del
+              </button>
+              <button type="button" class="key ghost" data-action="clear">
+                clear
+              </button>
+            </div>
+          </section>
+
+          <section class="panel graph-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Graph Lab</h2>
+                <p class="panel-subtitle">Plot f(x) with flexible ranges.</p>
+              </div>
+              <div class="graph-actions">
+                <button type="button" class="chip action" data-action="plot-graph">
+                  Plot
+                </button>
+                <button type="button" class="chip ghost" data-action="graph-use-expression">
+                  Use expression
+                </button>
+                <button type="button" class="chip ghost" data-action="reset-graph">
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <div class="graph-controls">
+              <label class="field">
+                <span>Function f(x)</span>
+                <input
+                  id="graphExpression"
+                  type="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="ex: sin(x) + x^2 / 5"
+                />
+              </label>
+              <div class="field-grid">
+                <label class="field">
+                  <span>X min</span>
+                  <input id="graphXMin" type="number" step="0.1" />
+                </label>
+                <label class="field">
+                  <span>X max</span>
+                  <input id="graphXMax" type="number" step="0.1" />
+                </label>
+                <label class="field">
+                  <span>Y min</span>
+                  <input id="graphYMin" type="number" step="0.1" />
+                </label>
+                <label class="field">
+                  <span>Y max</span>
+                  <input id="graphYMax" type="number" step="0.1" />
+                </label>
+                <label class="field">
+                  <span>Samples</span>
+                  <input id="graphSamples" type="number" min="40" max="600" step="10" />
+                </label>
+              </div>
+              <div class="graph-toggles">
+                <label class="toggle small">
+                  <input id="graphAutoY" type="checkbox" />
+                  <span class="toggle-track"></span>
+                  <span class="toggle-text">Auto Y</span>
+                </label>
+                <label class="toggle small">
+                  <input id="graphGrid" type="checkbox" />
+                  <span class="toggle-track"></span>
+                  <span class="toggle-text">Grid</span>
+                </label>
+                <label class="toggle small">
+                  <input id="graphAutoPlot" type="checkbox" />
+                  <span class="toggle-track"></span>
+                  <span class="toggle-text">Auto plot</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="graph-canvas-wrap">
+              <canvas id="graphCanvas" aria-label="Function graph"></canvas>
+              <div class="graph-overlay">
+                <span id="graphCoords">x: -, y: -</span>
+                <span id="graphRange">x: -, y: -</span>
+              </div>
+            </div>
+          </section>
+        </div>
 
         <section class="panel side-panel">
           <div class="panel-block library-block">
@@ -462,6 +551,38 @@
               placeholder="Search functions"
             />
             <ul class="library-list" id="libraryList"></ul>
+          </div>
+
+          <div class="panel-block snippet-block">
+            <div class="panel-header">
+              <h2>Quick Snippets</h2>
+              <button type="button" class="ghost-text" data-action="clear-snippets">
+                Clear
+              </button>
+            </div>
+            <div class="snippet-form">
+              <input
+                id="snippetLabel"
+                class="search-input"
+                type="text"
+                placeholder="Label"
+              />
+              <input
+                id="snippetValue"
+                class="search-input"
+                type="text"
+                placeholder="Expression"
+              />
+              <div class="snippet-actions">
+                <button type="button" class="chip action" data-action="add-snippet">
+                  Add snippet
+                </button>
+                <button type="button" class="chip ghost" data-action="save-current">
+                  Use expression
+                </button>
+              </div>
+            </div>
+            <ul class="list" id="snippetList"></ul>
           </div>
 
           <div class="panel-block">
@@ -548,6 +669,28 @@
           </div>
         </section>
       </main>
+    </div>
+
+    <div class="overlay" id="shortcutOverlay" aria-hidden="true">
+      <div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="shortcutTitle">
+        <div class="overlay-header">
+          <h2 id="shortcutTitle">Keyboard Shortcuts</h2>
+          <button type="button" class="ghost-text" data-action="close-help">
+            Close
+          </button>
+        </div>
+        <ul class="shortcut-list">
+          <li><span class="shortcut-key">Enter</span><span>Evaluate expression</span></li>
+          <li><span class="shortcut-key">Ctrl/Cmd + Enter</span><span>Evaluate from anywhere</span></li>
+          <li><span class="shortcut-key">Esc</span><span>Clear input or close overlay</span></li>
+          <li><span class="shortcut-key">?</span><span>Toggle this panel</span></li>
+          <li><span class="shortcut-key">Ctrl/Cmd + Shift + C</span><span>Copy result</span></li>
+          <li><span class="shortcut-key">Ctrl/Cmd + Shift + T</span><span>Shuffle theme</span></li>
+          <li><span class="shortcut-key">Ctrl/Cmd + Shift + P</span><span>Plot graph</span></li>
+          <li><span class="shortcut-key">Ctrl/Cmd + Shift + S</span><span>Save snippet</span></li>
+        </ul>
+        <p class="overlay-hint">Press ? anytime to toggle this panel.</p>
+      </div>
     </div>
 
     <script src="practice.js" defer></script>
