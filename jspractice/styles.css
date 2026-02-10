@@ -5,8 +5,8 @@
   --bg-2: #f4e8ff;
   --panel: rgba(255, 255, 255, 0.9);
   --panel-solid: #fffaf4;
-  --ink: #1c1c26;
-  --muted: #6a6f7a;
+  --ink: #141824;
+  --muted: #5a6472;
   --accent-a: #ff6b6b;
   --accent-a-soft: #ffe0df;
   --accent-b: #4ecdc4;
@@ -19,14 +19,16 @@
   --accent-e-soft: #ffd6ec;
   --accent-f: #8338ec;
   --accent-f-soft: #ead9ff;
-  --border: rgba(28, 28, 38, 0.12);
-  --shadow: rgba(20, 26, 44, 0.16);
+  --border: rgba(20, 24, 36, 0.12);
+  --shadow: rgba(20, 26, 44, 0.12);
   --chip: #fff7ee;
   --warn: #f4a259;
   --error: #e63946;
   --radius-lg: 24px;
   --radius-md: 16px;
   --radius-sm: 12px;
+  --surface-1: rgba(255, 255, 255, 0.82);
+  --surface-2: rgba(255, 255, 255, 0.65);
 }
 
 * {
@@ -59,7 +61,7 @@ body::before {
     transparent 1px,
     transparent 10px
   );
-  opacity: 0.4;
+  opacity: 0.32;
   pointer-events: none;
   z-index: 0;
 }
@@ -115,7 +117,7 @@ body::before {
   gap: 32px;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
   animation: rise 0.9s ease both;
 }
 
@@ -174,7 +176,7 @@ body::before {
 .hero-card {
   padding: 18px 22px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.74));
+  background: linear-gradient(135deg, var(--surface-1), var(--surface-2));
   border: 1px solid transparent;
   background-clip: padding-box;
   box-shadow: 0 18px 32px var(--shadow);
@@ -271,7 +273,7 @@ body::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.4), transparent);
   pointer-events: none;
 }
 
@@ -1041,6 +1043,11 @@ button {
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 28px;
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 14px 28px rgba(20, 26, 44, 0.08);
 }
 
 .brand {
@@ -1053,11 +1060,34 @@ button {
   width: 54px;
   height: 54px;
   border-radius: 18px;
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.4));
   box-shadow: 0 16px 24px rgba(31, 33, 40, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.logo-mark::after {
+  content: "";
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 24px;
+  background: radial-gradient(circle, rgba(255, 214, 236, 0.5), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+}
+
+.logo-mark:hover {
+  transform: translateY(-2px) rotate(-1deg);
+  box-shadow: 0 20px 30px rgba(31, 33, 40, 0.24);
+}
+
+.logo-mark:hover::after {
+  opacity: 1;
 }
 
 .logo-mark svg {
@@ -1257,7 +1287,7 @@ button {
 
 .panel:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 36px rgba(15, 23, 28, 0.16);
+  box-shadow: 0 22px 36px rgba(15, 23, 28, 0.14);
 }
 
 button:focus-visible,
