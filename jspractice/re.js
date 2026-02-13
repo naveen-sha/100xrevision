@@ -110,4 +110,63 @@ console.log(result);*/
     return {largest,smallest};
 }
 let result=findlargestandsmallest();
+console.log(result);
+*/
+//some functions things..........
+/* function calculatearithmetic(num1,num2,type){
+    if(type=="add"){
+      const value=sum( num1,num2);
+      return value;
+    }
+    if(type=="sub"){
+        if(type=="sub"){
+            const value=sub(num1,num2);
+            return value;
+        }
+
+}   
+}
+function sum( num1,num2){
+    return num1+num2;
+}
+function sub(num1,num2){
+    return num1-num2;
+}
+let result=calculatearithmetic(5,3,"sub");
 console.log(result);*/
+//............................................................
+
+//using callback functions.
+
+/*function calculatearithmetic(num1,num2,finalsum,finalsub){
+    const sum=finalsum(num1,num2);
+    const sub=finalsub(num1,num2);
+    return {sum,sub};
+
+}
+function sum( num1,num2){
+    return num1+num2;
+};
+function sub(num1,num2){
+    return num1-num2;   
+}
+let result=calculatearithmetic(9,6,sum,sub);
+console.log(result);*/
+//............................................................
+//using settimeout function to delay the execution of a function by 2 seconds.
+/*function greeting(name){
+    console.log("Hello, "+name+"! Welcome to JavaScript programming.");
+}
+
+setTimeout(greeting,5 * 1000,"naveen");*/
+//............................................................
+//setinterval function to print the current time every second for 5 seconds.
+/* function printCurrentTime(){
+    const now=new Date();
+    console.log("Current time: "+now.toLocaleTimeString());
+}
+setInterval(printCurrentTime,5*1000);*/
+//............................................................
+
+
+
