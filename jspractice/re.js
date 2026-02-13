@@ -151,22 +151,25 @@ function sub(num1,num2){
     return num1-num2;   
 }
 let result=calculatearithmetic(9,6,sum,sub);
-console.log(result);*/
+console.log(result);
 //............................................................
 //using settimeout function to delay the execution of a function by 2 seconds.
-/*function greeting(name){
+function greeting(name){
     console.log("Hello, "+name+"! Welcome to JavaScript programming.");
 }
 
-setTimeout(greeting,5 * 1000,"naveen");*/
+setTimeout(greeting,5 * 1000,"naveen");
 //............................................................
 //setinterval function to print the current time every second for 5 seconds.
-/* function printCurrentTime(){
+ function printCurrentTime(){
     const now=new Date();
     console.log("Current time: "+now.toLocaleTimeString());
 }
 setInterval(printCurrentTime,5*1000);*/
 //............................................................
+
+
+
 
 
 
