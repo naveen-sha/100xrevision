@@ -168,8 +168,34 @@ setTimeout(greeting,5 * 1000,"naveen");
 setInterval(printCurrentTime,5*1000);*/
 //............................................................
 
+/*let data={
+    name:"naveen",  
+    age:17,
+    rollnumber:24005080034,
+    height:"176cm",    
+    weight:"71kg"
+}
+                    
 
+for(let key in data){
+    console.log(key+": "+data[key]);
+}
 
+async function fetchData(){
+    try{
+        const response=await fetch("https://jsonplaceholder.typicode.com/users/1");
+        const data=await response.json();
+        console.log(data);
+    }catch(error){
+        console.log(error);
+    }   
+};
+
+fetchData();
+prompt("Enter your name: ",function(name){
+    console.log("Hello, "+name+"! Welcome to JavaScript programming.");
+});*/
+//................................................................
 
 
 
