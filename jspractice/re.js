@@ -195,7 +195,7 @@ fetchData();
 prompt("Enter your name: ",function(name){
     console.log("Hello, "+name+"! Welcome to JavaScript programming.");
 });*/
-//................................................................
+
 
  
 
