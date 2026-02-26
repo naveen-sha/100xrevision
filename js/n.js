@@ -20,4 +20,4 @@ const myPromise = new Promise((resolve, reject) => {
 });
 myPromise.then((message)=>{
     console.log(message);
-})
+});
