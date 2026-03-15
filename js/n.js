@@ -24,7 +24,7 @@ myPromise.then((message)=>{
 */
 // microtask and macrotask
 
-/* console.log("Start");
+/*console.log("Start");
 
 Promise.resolve().then(() => {
   console.log("Promise");
@@ -48,5 +48,5 @@ console.log("End");
 // dom
 function changeText() {
   document.getElementById("title").innerText = "You clicked the button!";
-}
-   */
+}*/
+
