@@ -14,7 +14,7 @@
 
 console.log(student.getName);
 console.log(student.getClass);*/
-const student = {
+/* const student = {
   name: "",
 
   set setName(value) {
@@ -25,3 +25,4 @@ const student = {
 student.setName = "Naveen";
 
 console.log(student.name);
+*/
