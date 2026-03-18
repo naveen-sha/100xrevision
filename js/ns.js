@@ -26,3 +26,16 @@ student.setName = "Naveen";
 
 console.log(student.name);
 */
+const student = {
+  name: "",
+
+  set setName(value) {
+    this.name = value;
+  }
+};
+
+student.setName = "Naveen";
+
+console.log(student.name);
+
+
