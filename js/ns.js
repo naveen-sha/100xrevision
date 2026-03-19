@@ -26,7 +26,7 @@ student.setName = "Naveen";
 
 console.log(student.name);
 */
-const student = {
+/*const student = {
   name: "",
 
   set setName(value) {
@@ -36,6 +36,7 @@ const student = {
 
 student.setName = "Naveen";
 
-console.log(student.name);
+console.log(student.name);*/
+
 
 
