@@ -37,6 +37,17 @@ console.log(student.name);
 student.setName = "Naveen";
 
 console.log(student.name);*/
+l/*et async = (nim,nis) => {
+  console.log("Hello " + nim + " " + nis);
 
 
+}
 
+async("Naveen", "10th class");
+if(async){
+  console.log("Async function is defined");
+}else{
+  console.log("Async function is not defined");
+}
+
+*/
