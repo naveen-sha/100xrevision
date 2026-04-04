@@ -49,4 +49,5 @@ console.log("End");
 function changeText() {
   document.getElementById("title").innerText = "You clicked the button!";
 }*/
+console.log(Math.random());
 
