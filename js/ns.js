@@ -61,4 +61,9 @@ if(async){
 
 add(2)(3); // 5*/
 
-console.log(Math.random());
+ console.log(Math.random());
+let num= Math.random();
+if(num < 0.5){
+  console.log("Number is less than 0.5");
+}
+
