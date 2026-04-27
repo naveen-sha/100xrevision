@@ -37,7 +37,7 @@ console.log(student.name);
 student.setName = "Naveen";
 
 console.log(student.name);*/
-l/*et async = (nim,nis) => {
+/*et async = (nim,nis) => {
   console.log("Hello " + nim + " " + nis);
 
 
@@ -61,9 +61,22 @@ if(async){
 
 add(2)(3); // 5*/
 
- console.log(Math.random());
+/* console.log(Math.random());
 let num= Math.random();
 if(num < 0.5){
   console.log("Number is less than 0.5");
 }
+*/
+
+// arrays
+let arr = [1, 2, 3, 4, 5];
+let array= new Array(1, 2, 3, 4, 5);
+type=typeof arr;
+arr.push(6);
+if(type === "object"){
+  console.log("Array is an object",arr);
+}else{
+  console.log("Array is not an object",arr);
+}               
+
 
